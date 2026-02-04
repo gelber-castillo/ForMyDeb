@@ -23,6 +23,22 @@
             padding: 20px;
         }
 
+        .valentine-img {
+            max-width: 300px;
+            width: 80%;
+            height: auto;
+            border-radius: 20px;
+            margin-bottom: 30px;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.2);
+            display: none; /* Hidden by default until image is set */
+        }
+
+        .valentine-img.show {
+            display: block;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
         h1 {
             font-size: 3rem;
             color: #d63384;
@@ -31,7 +47,6 @@
         }
 
         .button-container {
-            position: relative;
             display: flex;
             gap: 30px;
             justify-content: center;
@@ -63,7 +78,6 @@
         #noBtn {
             background: linear-gradient(135deg, #a8edea 0%, #fed6e3 100%);
             color: #d63384;
-            position: absolute;
         }
 
         .message {
@@ -92,17 +106,24 @@
         .heart {
             position: absolute;
             font-size: 2rem;
-            animation: float 3s ease-in-out infinite;
+            animation: float 4s ease-in forwards;
             opacity: 0;
+            bottom: -50px;
         }
 
         @keyframes float {
             0% {
                 transform: translateY(0) rotate(0deg);
+                opacity: 0;
+            }
+            10% {
+                opacity: 1;
+            }
+            90% {
                 opacity: 1;
             }
             100% {
-                transform: translateY(-100vh) rotate(360deg);
+                transform: translateY(-110vh) rotate(360deg);
                 opacity: 0;
             }
         }
@@ -110,11 +131,12 @@
 </head>
 <body>
     <div class="container">
-        <h1>💕 Will you be my Valentine? 💕</h1>
-        
+        <img id="valentineImage" src="" alt="Valentine Image" class="valentine-img">
+        <h1>💕 Deborah, will you be my Valentine? 💕</h1>
+
         <div class="button-container">
-            <button id="yesBtn">Yes! 😊</button>
-            <button id="noBtn">No 😢</button>
+            <button id="yesBtn">Oui! 😊</button>
+            <button id="noBtn">No 🙂‍↔️</button>
         </div>
 
         <div id="message" class="message"></div>
@@ -127,10 +149,20 @@
         const noBtn = document.getElementById('noBtn');
         const message = document.getElementById('message');
         const hearts = document.getElementById('hearts');
+        const valentineImage = document.getElementById('valentineImage');
+
+        // Replace the URL below with your own image URL or leave empty for no image
+        const imageUrl = 'deb.jpeg'; // Example: 'https://example.com/your-image.jpg'
+
+        // Show image if URL is provided
+        if (imageUrl) {
+            valentineImage.src = imageUrl;
+            valentineImage.classList.add('show');
+        }
 
         // Handle Yes button click
         yesBtn.addEventListener('click', () => {
-            message.textContent = '🎉 Hooray! 🎉';
+            message.textContent = '🎉 Woohoo! Je t\'aime 😘🌹';
             message.classList.add('show');
             noBtn.style.display = 'none';
             createHearts();
@@ -138,7 +170,7 @@
 
         // Handle No button hover - move it away
         noBtn.addEventListener('mouseenter', moveButton);
-        
+
         // Also handle touch for mobile devices
         noBtn.addEventListener('touchstart', (e) => {
             e.preventDefault();
@@ -148,35 +180,62 @@
         function moveButton() {
             const container = document.querySelector('.button-container');
             const containerRect = container.getBoundingClientRect();
-            
+
             // Get random position within a reasonable range
             const maxX = window.innerWidth - noBtn.offsetWidth - 40;
             const maxY = window.innerHeight - noBtn.offsetHeight - 40;
-            
+
             const randomX = Math.random() * maxX;
             const randomY = Math.random() * maxY;
-            
+
             noBtn.style.position = 'fixed';
             noBtn.style.left = randomX + 'px';
             noBtn.style.top = randomY + 'px';
         }
 
         function createHearts() {
-            for (let i = 0; i < 30; i++) {
+            // Create initial burst of hearts
+            for (let i = 0; i < 20; i++) {
                 setTimeout(() => {
-                    const heart = document.createElement('div');
-                    heart.className = 'heart';
-                    heart.textContent = '❤️';
-                    heart.style.left = Math.random() * 100 + '%';
-                    heart.style.animationDelay = Math.random() * 2 + 's';
-                    heart.style.animationDuration = (Math.random() * 2 + 3) + 's';
-                    hearts.appendChild(heart);
-
-                    setTimeout(() => {
-                        heart.remove();
-                    }, 5000);
-                }, i * 100);
+                    createSingleHeart();
+                }, i * 150);
             }
+
+            // Continue creating hearts randomly
+            const heartInterval = setInterval(() => {
+                createSingleHeart();
+            }, 500);
+
+            // Stop after 10 seconds
+            setTimeout(() => {
+                clearInterval(heartInterval);
+            }, 10000);
+        }
+
+        function createSingleHeart() {
+            const heart = document.createElement('div');
+            heart.className = 'heart';
+
+            // Random heart emoji
+            const heartEmojis = ['❤️', '💕', '💖', '💗', '💓', '💝'];
+            heart.textContent = heartEmojis[Math.floor(Math.random() * heartEmojis.length)];
+
+            // Random horizontal position
+            heart.style.left = Math.random() * 100 + '%';
+
+            // Random animation duration (3-5 seconds)
+            const duration = Math.random() * 2 + 3;
+            heart.style.animationDuration = duration + 's';
+
+            // Random delay
+            heart.style.animationDelay = Math.random() * 0.5 + 's';
+
+            hearts.appendChild(heart);
+
+            // Remove heart after animation completes
+            setTimeout(() => {
+                heart.remove();
+            }, (duration + 0.5) * 1000);
         }
     </script>
 </body>
